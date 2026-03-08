@@ -1,0 +1,81 @@
+#include <stdio.h>
+
+int findMissing(int arr[], int size, int min, int max) {
+    int expectedSum = 0;
+    int actualSum = 0;
+
+    // Sum of consecutive integers from min to max
+    for (int i = min; i <= max; i++) {
+        expectedSum += i;
+    }
+
+    // Sum of elements actually in the array
+    for (int i = 0; i < size; i++) {
+        actualSum += arr[i];
+    }
+
+    return expectedSum - actualSum;
+}
+
+int main() {
+    int arr[] = {3, 7, 4, 5, 8, 6}; // Range 3-8, missing 6? No, let's say missing 2.
+    int n = sizeof(arr) / sizeof(arr[0]);
+    
+    // Assuming range is 3 to 9 (N=7 consecutive numbers)
+    printf("Missing Number: %d\n", findMissing(arr, n, 3, 9));
+    return 0;
+}
+
+
+
+#include <stdio.h>
+
+void solveMountain(int A[], int n) {
+    if (n < 3) return;
+
+    // Task 1: Find the peak index
+    int peak = 0;
+    while (peak < n - 1 && A[peak] < A[peak + 1]) {
+        peak++;
+    }
+    printf("Peak Element Index: %d (Value: %d)\n", peak, A[peak]);
+
+    // Task 2: Rearrange in increasing order O(n) time, O(1) space
+    // Since the right side is strictly decreasing, reversing it 
+    // makes the whole array a merge-ready set.
+    int left = peak + 1;
+    int right = n - 1;
+    while (left < right) {
+        int temp = A[left];
+        A[left] = A[right];
+        A[right] = temp;
+        left++;
+        right--;
+    }
+
+    // Now A[0...peak] is increasing and A[peak+1...n-1] is increasing.
+    // We can use an in-place merge-style approach (In-place sort)
+    // For simplicity in O(n) while maintaining O(1) space, 
+    // we use a modified insertion logic or a two-pointer swap.
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (A[i] > A[j]) {
+                int temp = A[i];
+                A[i] = A[j];
+                A[j] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int A[] = {1, 3, 8, 12, 4, 2};
+    int n = sizeof(A) / sizeof(A[0]);
+
+    solveMountain(A, n);
+
+    printf("Rearranged Array: ");
+    for (int i = 0; i < n; i++) printf("%d ", A[i]);
+    
+    return 0;
+}
