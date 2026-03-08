@@ -1,0 +1,86 @@
+
+question 1//
+#include <stdio.h>
+
+struct Process {
+    int id, at, bt, ct, tat, wt;
+};
+
+void calculateFCFS_Basic() {
+    int n = 5;
+    struct Process p[] = {
+        {0, 0, 5}, {1, 1, 7}, {2, 2, 6}, {3, 3, 2}, {4, 4, 4}
+    };
+
+    int current_time = 0;
+    float total_tat = 0, total_wt = 0;
+
+    printf("\nProcess\tAT\tBT\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++) {
+        if (current_time < p[i].at) {
+            current_time = p[i].at;
+        }
+        p[i].ct = current_time + p[i].bt;
+        p[i].tat = p[i].ct - p[i].at;
+        p[i].wt = p[i].tat - p[i].bt;
+        
+        current_time = p[i].ct;
+        total_tat += p[i].tat;
+        total_wt += p[i].wt;
+
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n", p[i].id, p[i].at, p[i].bt, p[i].ct, p[i].tat, p[i].wt);
+    }
+
+    printf("\nAverage Turnaround Time: %.2f", total_tat / n);
+    printf("\nAverage Waiting Time: %.2f\n", total_wt / n);
+}
+
+int main() {
+    calculateFCFS_Basic();
+    return 0;
+}
+
+
+
+question 2//
+#include <stdio.h>
+
+struct ProcessIO {
+    int id, at, bt, io, ct, tat, wt;
+};
+
+void calculateFCFS_IO() {
+    int n = 5;
+    struct ProcessIO p[] = {
+        {0, 0, 5, 2}, {1, 0, 7, 2}, {2, 0, 6, 3}, {3, 0, 8, 1}, {4, 0, 5, 2}
+    };
+
+    int current_time = 0;
+    float total_tat = 0, total_wt = 0;
+
+    printf("\nProcess\tBT\tIO\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++) {
+        // Process takes BT on CPU, then does IO
+        p[i].ct = current_time + p[i].bt + p[i].io;
+        p[i].tat = p[i].ct - p[i].at;
+        // Waiting time is TAT minus the time it was actually busy (BT + IO)
+        p[i].wt = p[i].tat - (p[i].bt + p[i].io);
+
+        // CPU is free for the next process after this one finishes its CPU burst
+        current_time += p[i].bt; 
+        
+        total_tat += p[i].tat;
+        total_wt += p[i].wt;
+
+        printf("P%d\t%d\t%d\t%d\t%d\t%d\n", p[i].id, p[i].bt, p[i].io, p[i].ct, p[i].tat, p[i].wt);
+    }
+
+    printf("\nAverage Turnaround Time: %.2f", total_tat / n);
+    printf("\nAverage Waiting Time: %.2f\n", total_wt / n);
+}
+
+int main() {
+    printf("--- Question 2: FCFS with I/O ---\n");
+    calculateFCFS_IO();
+    return 0;
+}
